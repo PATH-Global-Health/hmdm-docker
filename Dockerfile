@@ -3,12 +3,12 @@
 FROM tomcat:9-jdk11-temurin-jammy
 
 RUN apt-get update \
-    && apt-get upgrade -y
+	&& apt-get upgrade -y
 RUN apt-get install -y \
 	aapt \
 	wget \
 	sed \
-        postgresql-client \
+	postgresql-client \
 	&& rm -rf /var/lib/apt/lists/*
 RUN mkdir -p /usr/local/tomcat/conf/Catalina/localhost
 RUN mkdir -p /usr/local/tomcat/ssl
@@ -45,7 +45,7 @@ ENV PROTOCOL=https
 #ENV LOCAL_IP=172.31.91.82
 
 # Comment it to use custom certificates
-ENV HTTPS_LETSENCRYPT=true
+ENV HTTPS_LETSENCRYPT=false
 # Mount the custom certificate path if custom certificates must be used
 # ENV_HTTPS_CERT_PATH is the path to certificates and keys inside the container
 #ENV HTTPS_CERT_PATH=/cert
