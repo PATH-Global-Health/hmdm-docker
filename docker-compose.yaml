@@ -2,18 +2,18 @@ version: '3'
 
 services:
 
-  certbot:
-    image: certbot/certbot:v1.4.0
-    volumes:
-      - ./volumes/letsencrypt:/etc/letsencrypt
-    ports: 
-      - 80:80
-    entrypoint: "certbot certonly --non-interactive --agree-tos -m ${ADMIN_EMAIL} --standalone -d ${BASE_DOMAIN}"
+  # certbot:
+  #   image: certbot/certbot:v1.4.0
+  #   volumes:
+  #     - ./volumes/letsencrypt:/etc/letsencrypt
+  #   ports: 
+  #     - 80:80
+  #   entrypoint: "certbot certonly --non-interactive --agree-tos -m ${ADMIN_EMAIL} --standalone -d ${BASE_DOMAIN}"
 
   postgresql:
     image: postgres:12-alpine
     ports:
-      - 5432:5432
+      - 15432:5432
     environment:
       POSTGRES_USER: ${SQL_USER}
       POSTGRES_PASSWORD: ${SQL_PASS}
@@ -24,11 +24,12 @@ services:
   hmdm:
     image: headwindmdm/hmdm:0.1.4
     ports:
-      - 443:8443
+      - 31443:8443
       - 31000:31000
+      - 8080:8080
     volumes:
       - ./volumes/work:/usr/local/tomcat/work
-      - ./volumes/letsencrypt:/etc/letsencrypt
+      # - ./volumes/letsencrypt:/etc/letsencrypt
     environment:
       SQL_HOST: postgresql
       SQL_USER: ${SQL_USER}
@@ -43,4 +44,15 @@ services:
       HMDM_URL: ${HMDM_URL}
       CLIENT_VERSION: ${CLIENT_VERSION}
       FORCE_RECONFIGURE: ${FORCE_RECONFIGURE}
+  nginx:
+    build:
+      context: .
+      dockerfile: ./nginx/Dockerfile
+    ports:
+      - 8888:8888
+    volumes:
+      - ./volumes/work/files:/usr/share/nginx/html/files
+      - ./volumes/lib:/usr/share/nginx/html/lib
+    depends_on:
+      - hmdm
 
